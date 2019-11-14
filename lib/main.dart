@@ -76,7 +76,7 @@ class _TimeZoneAppState extends State<TimeZoneApp> {
   }
 
   dynamic selection;
-  String selectedTimeZone = 'Select Time Zone';
+  String updatedTimeZone = 'Select Time Zone';
   Widget appBarTitle = Text(
     'Select Time Zone',
     style: TextStyle(fontWeight: FontWeight.bold),
@@ -89,23 +89,35 @@ class _TimeZoneAppState extends State<TimeZoneApp> {
         appBar: AppBar(
           title: appBarTitle,
           actions: <Widget>[
-            IconButton(icon: Icon(Icons.search), onPressed: () {}),
+//            IconButton(
+//                icon: Icon(Icons.search),
+//                onPressed: () async {
+//                  String result = await showSearch(
+//                      context: context,
+//                      delegate: TimeZoneSearch(locationsList));
+//                  if(result != null){
+//                    updatedTimeZone = result;
+//                    setState(() {
+//                    });
+//                  }
+//
+//
+//                }),
             IconButton(icon: Icon(Icons.more_vert), onPressed: () {}),
           ],
         ),
         body: Container(
           child: GestureDetector(
               onTap: () async {
-                final result =
-                await Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return TimeZoneList();
-                  },
-                ));
-                setState(() {
-                  selectedTimeZone = result;
-                  print(selectedTimeZone);
-                });
+                String result = await showSearch(
+                    context: context,
+                    delegate: TimeZoneSearch(locationsList));
+                if (result != null) {
+                  updatedTimeZone = result;
+                  setState(() {});
+                }
+
+
               },
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -124,7 +136,7 @@ class _TimeZoneAppState extends State<TimeZoneApp> {
                     ),
                     Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(selectedTimeZone,
+                        child: Text(updatedTimeZone,
                             style:
                             TextStyle(fontSize: 20, color: Colors.grey))),
                   ],
@@ -135,97 +147,134 @@ class _TimeZoneAppState extends State<TimeZoneApp> {
     );
   }
 }
+//
+//class TimeZoneList extends StatefulWidget {
+//  @override
+//  _TimeZoneListState createState() => _TimeZoneListState();
+//}
+//
+//List duplicateLocationsList = [];
+//List filteredList = [];
+//String searchText;
+//
+//class _TimeZoneListState extends State<TimeZoneList> {
+//  @override
+//  void initState() {
+//    // TODO: implement initState
+//    super.initState();
+//    duplicateLocationsList.addAll(locationsList);
+//    filteredList.addAll(duplicateLocationsList);
+//
+//    searchController.addListener(() {
+//      if (searchController.text.isEmpty) {
+//        setState(() {
+//          filteredList.addAll(duplicateLocationsList);
+//        });
+//      } else {
+//        setState(() {
+//          searchText = searchController.text;
+//          filteredList = [];
+//          duplicateLocationsList.forEach((location) {
+//            if (location
+//                .toString()
+//                .toLowerCase()
+//                .contains(searchText.toLowerCase())) {
+//              filteredList.add(location);
+//            }
+//            setState(() {});
+//          });
+//        });
+//      }
+//    });
+//  }
+//
+//  Widget appBarTextSearch;
+//  TextEditingController searchController = TextEditingController();
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        title: appBarTextSearch == null ? null : appBarTextSearch,
+//        leading: IconButton(
+//          icon: Icon(Icons.search),
+//          onPressed: () {},
+//        ),
+//      ),
+//      body: ListView.builder(
+//          itemCount: filteredList.length,
+//          shrinkWrap: true,
+//          scrollDirection: Axis.vertical,
+//          itemBuilder: (BuildContext context, int index) {
+//            return GestureDetector(
+//              onTap: () {
+//                Navigator.of(context).pop(filteredList[index]);
+//              },
+//              child: Card(
+//                color: Colors.black,
+//                child: Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: Center(
+//                      child: Text(
+//                    filteredList[index],
+//                    style: TextStyle(fontSize: 22),
+//                  )),
+//                ),
+//              ),
+//            );
+//          }),
+//    );
+//  }
+//
+//  @override
+//  void dispose() {
+//    // TODO: implement dispose
+//    super.dispose();
+//    searchController.dispose();
+//    print('disposed');
+//  }
+//}
 
-class TimeZoneList extends StatefulWidget {
+class TimeZoneSearch extends SearchDelegate<String> {
+  List<String> tzList;
+
+  TimeZoneSearch(this.tzList);
   @override
-  _TimeZoneListState createState() => _TimeZoneListState();
-}
+  List<Widget> buildActions(BuildContext context) {
+    return null;
+  }
 
-List duplicateLocationsList = [];
-List filteredList = [];
-String searchText;
-
-class _TimeZoneListState extends State<TimeZoneList> {
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    duplicateLocationsList.addAll(locationsList);
-    filteredList.addAll(duplicateLocationsList);
-
-    searchController.addListener(() {
-      if (searchController.text.isEmpty) {
-        setState(() {
-          filteredList.addAll(duplicateLocationsList);
-        });
-      }
-      else {
-        setState(() {
-          searchText = searchController.text;
-          filteredList = [];
-          duplicateLocationsList.forEach((location) {
-            if (location.toString().toLowerCase().contains(
-                searchText.toLowerCase())) {
-              filteredList.add(location);
-            }
-            setState(() {
-
-            });
-          });
-        });
-      }
+  Widget buildLeading(BuildContext context) {
+    return IconButton(icon: Icon(Icons.arrow_back), onPressed: () {
+      close(context, null);
     });
   }
 
-  Widget appBarTextSearch;
-  TextEditingController searchController = TextEditingController();
-
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: appBarTextSearch == null ? null : appBarTextSearch,
-        leading: IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () {
-            setState(() {
-              appBarTextSearch = TextField(
-                controller: searchController,
-              );
-            });
-          },
-        ),
-      ),
-      body: ListView.builder(
-          itemCount: filteredList.length,
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (BuildContext context, int index) {
-            return GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop(filteredList[index]);
-              },
-              child: Card(
-                color: Colors.black,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
-                      child: Text(
-                        filteredList[index],
-                        style: TextStyle(fontSize: 22),
-                      )),
-                ),
-              ),
-            );
-          }),
-    );
+  Widget buildResults(BuildContext context) {
+    // TODO: implement buildResults
+    return null;
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    searchController.dispose();
-    print('disposed');
+  Widget buildSuggestions(BuildContext context) {
+    List<String> duplicateTimeZoneList = [];
+    duplicateTimeZoneList.addAll(locationsList);
+    List<String> timeZoneResults = duplicateTimeZoneList.where((
+        String timeZone) =>
+        timeZone.toLowerCase().contains(query.toLowerCase()))
+        .toList();
+    // TODO: implement buildSuggestions
+    return ListView.builder(
+        itemCount: timeZoneResults.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            onTap: () {
+              close(context, timeZoneResults[index]);
+            },
+            title: Text(timeZoneResults[index]),
+          );
+        });
   }
 }
