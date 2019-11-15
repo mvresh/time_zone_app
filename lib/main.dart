@@ -239,6 +239,13 @@ class TimeZoneSearch extends SearchDelegate<String> {
   List<String> tzList;
 
   TimeZoneSearch(this.tzList);
+
+  @override
+  ThemeData appBarTheme(BuildContext context) {
+    // TODO: implement appBarTheme
+    return ThemeData.dark();
+  }
+
   @override
   List<Widget> buildActions(BuildContext context) {
     return null;
